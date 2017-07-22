@@ -11,7 +11,7 @@
 #include "TCanvas.h"
 using std::string;
 using std::vector;
-void MyAnalyzer()
+void MyAnalyzer_old_Jul11_HGCAL_4()
 {
   // get file and tree
   //  string fileName = "/eos/cms/store/cmst3/group/hgcal/CMG_studies/Production/FlatRandomPtGunProducer_SinglePhoton_35GeV_20170523/NTUP/partGun_PDGid22_x120_Pt35.0To35.0_NTUP_1.root"; // specified sample
@@ -40,8 +40,8 @@ void MyAnalyzer()
   TH2* hScatter_Delta_eta_Delta_rho_lowerGenEta=new TH2F("hScatter_Delta_eta_Delta_rho_lowerGenEta","Scatter plot of Delta_eta versus Delta_rho for photons with abs(eta)<2.2",240,-0.06,0.06,400,-5.,5.); 
   TH2* hScatter_Delta_eta_Delta_rho_higherGenEta=new TH2F("hScatter_Delta_eta_Delta_rho_higherGenEta","Scatter plot of Delta_eta versus Delta_rho for photons with abs(eta)>2.2",240,-0.06,0.06,400,-5.,5.); 
   TH2* hScatter_Delta_theta_Delta_rho_lowerGenEta=new TH2F("hScatter_Delta_theta_Delta_rho_lowerGenEta","Scatter plot of Delta_theta versus Delta_rho for photons with abs(eta)<2.2",240,-0.06,0.06,400,-5.,5.); 
-  TH2* hScatter_Delta_theta_Delta_rho_higherGenEta=new TH2F("hScatter_Delta_theta_Delta_rho_higherGenEta","Scatter plot of Delta_theta versus Delta_rho for photons with abs(eta)>2.2",240,-0.06,0.06,400,-5.,5.); TH1* hEneProfileVsLayers = new TH1F( "hEneProfileVsLayers", "Energy deposition as a function of layers", 50, 0., 50. );
-
+  TH2* hScatter_Delta_theta_Delta_rho_higherGenEta=new TH2F("hScatter_Delta_theta_Delta_rho_higherGenEta","Scatter plot of Delta_theta versus Delta_rho for photons with abs(eta)>2.2",240,-0.06,0.06,400,-5.,5.);
+  TProfile* hEneProfileVsLayers = new TProfile("hEneProfileVsLayers", "Energy deposition as a function of layers", 50, 0., 50.,0.,1.);
 
   char histRho[500];
   char histRhoPhi[500];
@@ -51,7 +51,7 @@ void MyAnalyzer()
   char histNumCluster[500];
   char histClusterEnergy[500];
   char histClusterPt[500];
-
+  char EneProfForLayer[500];
   int EneClusterIndex=1;
 
   sprintf(histRho,"hDelta_rho_E%i",EneClusterIndex);
@@ -62,7 +62,11 @@ void MyAnalyzer()
   sprintf(histNumClusterNoThreshold,"hNumMultiClustersNoThreshold");
   sprintf(histClusterEnergy,"hLeadingMultiClusterEnergy");
   sprintf(histClusterPt,"hLeadingMultiClusterPt");
-
+  std::vector<TH1*> histEneProfForLayer(50);
+  for(int k=0;k<50;k++){
+    sprintf(EneProfForLayer,"EneFracProfForLayer_%i",k+1);
+    histEneProfForLayer.at(k)=new  TH1F(EneProfForLayer,"Distribution of energy fractions for a given layer",100,0,1);
+  }
   TH1* hDelta_rho_multicluster= new TH1F(histRho,"Difference(rho_measured-rho_true) for a leading energy multicluster(cm)",240,-1.0,1.0);
   TH1* hDelta_rhophi_multicluster = new TH1F(histRhoPhi,"Difference[rho_true*(phi_measured-phi_true)] for a leading energy multicluster",240,-1.0,1.0);
   TH1* hDelta_eta_multicluster= new TH1F(histEta,"Difference(eta_measured-eta_true) for a leading energy multicluster",320,-0.02,0.02);
@@ -271,7 +275,8 @@ void MyAnalyzer()
 		  //plots energy of a leading 2D cluster versus layer to get the energy profile
 		  if(CumulativeEnergy!=0.){		 
 		    for(int LIndex=0;LIndex<50;LIndex++){
-		      hEneProfileVsLayers->Fill(LIndex+1,leadingcluster_energy[LIndex]);
+		      hEneProfileVsLayers->Fill(LIndex+1,leadingcluster_energy[LIndex]/CumulativeEnergy,1);
+		      histEneProfForLayer.at(LIndex)->Fill(leadingcluster_energy[LIndex]/CumulativeEnergy);
 		    }
 		  }
 		  hScatter_Delta_eta_Delta_rho_multicluster->Fill(etaM_etaT,rhoM_rhoT);
@@ -312,10 +317,13 @@ void MyAnalyzer()
   }
   std::cout<<" TotNumOfEvents "<<TotNumOfEvents<<" TotNoninteractedPhotons "<<TotPhotonsOfInterest<<" NoMatchingMultiClusToPhoton "<<NoMatchingMultiClusToPhoton<<" NonMatch_Photon_Multicluster "<<NonMatch_Photon_Multicluster<<" NonMatch_LessPhoton_MoreMulticluster "<<NonMatch_LessPhoton_MoreMulticluster<<" NonMatch_MorePhoton_LessMulticluster "<<NonMatch_MorePhoton_LessMulticluster<<" NonMatch_MorePhoton_ZeroMulticluster "<<NonMatch_MorePhoton_ZeroMulticluster<<" Match_Photon_Multicluster "<<Match_Photon_Multicluster<<endl;
   // draw histograms
-  TFile *ouputFile = new TFile("BasicPlots.root","RECREATE");
+  TFile *ouputFile = new TFile("BasicPlots_old_Jul11_HGCAL_4.root","RECREATE");
   hNonInteractedPhotons->Write();
   hScatter_Delta_eta_Delta_rho_multicluster->Write();
   hEneProfileVsLayers->Write();
+  for(int LIndex=0;LIndex<50;LIndex++){
+    histEneProfForLayer.at(LIndex)->Write();
+  }
   hDelta_rho_multicluster->Write();
   hDelta_rhophi_multicluster->Write();
   hDelta_eta_multicluster->Write();
