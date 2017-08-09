@@ -46,7 +46,7 @@ void MyAnalyzer_old_Jul05_HGCAL_3()
   char histPhi[500];
   char histNumCluster[500];
   char histClusterEnergy[500];
-  int layerIndex=6;
+  int layerIndex=24;
   int EneClusterIndex=1;
   sprintf(histRho,"hDelta_rho_L%i_E%i",layerIndex,EneClusterIndex);
   sprintf(histRhoPhi,"hDelta_rhophi_L%i_E%i",layerIndex,EneClusterIndex);
@@ -177,7 +177,7 @@ void MyAnalyzer_old_Jul05_HGCAL_3()
 	      int NumClusters=0;
 	      for(int clusEneIndex = 0; clusEneIndex < cluster2d_energy->size(); clusEneIndex++ ) {
 		if((photon_Eta>0 && cluster2d_eta->at(clusEneIndex)>0) || (photon_Eta<0 && cluster2d_eta->at(clusEneIndex)<0)){
-		  if(cluster2d_layer->at(clusEneIndex)==6 && cluster2d_multicluster->at(clusEneIndex)==startMultiClusIndex){
+		  if(cluster2d_layer->at(clusEneIndex)==24 && cluster2d_multicluster->at(clusEneIndex)==startMultiClusIndex){
 		    NumClusters++;
 		  }
 		}
@@ -207,7 +207,7 @@ void MyAnalyzer_old_Jul05_HGCAL_3()
 	      float Max_cluster2D_eta=0;
 	      for(int clusEneIndex = 0; clusEneIndex < cluster2d_energy->size(); clusEneIndex++ ) {
 		if((photon_Eta>0 && cluster2d_eta->at(clusEneIndex)>0 && cluster2d_multicluster->at(clusEneIndex)==startMultiClusIndex) || (photon_Eta<0 && cluster2d_eta->at(clusEneIndex)<0 && cluster2d_multicluster->at(clusEneIndex)==startMultiClusIndex)){
-		  if(clusEneIndex!=startIndex && cluster2d_layer->at(clusEneIndex)==6 && cluster2d_energy->at(clusEneIndex)<=MaxFound){
+		  if(clusEneIndex!=startIndex && cluster2d_layer->at(clusEneIndex)==24 && cluster2d_energy->at(clusEneIndex)<=MaxFound){
 		    if(cluster2d_energy->at(clusEneIndex)>Max_cluster2D_energy){
 		      Max_cluster2D_energy=cluster2d_energy->at(clusEneIndex);
 		      startIndex=clusEneIndex;
